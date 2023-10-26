@@ -1,0 +1,14 @@
+/node_modules
+/secrets.json
+/secrets.*.json
+**.log
+foundry/cache
+foundry/out
+artifacts
+cache
+lib/*
+broadcast/*
+.env
+*~
+.\#*
+\#*\#

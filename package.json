@@ -1,0 +1,28 @@
+{
+    "name": "0x-migrations",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "Apache-2.0",
+    "scripts": {
+        "compile": "soluble compile -O artifacts contracts/**.sol",
+        "postinstall": "sed -i -E 's~^[^/].+Number can only safely.+$~// \\0~g' 'node_modules/bn.js/lib/bn.js'",
+        "forge:test": "cd foundry && forge test -vvvv -f $ETH_RPC_URL && cd -"
+    },
+    "dependencies": {
+        "@0x/contracts-multisig": "^4.1.38",
+        "bignumber.js": "^9.0.0",
+        "colors": "^1.4.0",
+        "ethereumjs-util": "^7.0.7",
+        "flex-contract": "^2.4.8",
+        "flex-ether": "^1.10.7",
+        "ganache-core": "^2.13.2",
+        "lodash": "^4.17.15",
+        "node-fetch": "^2.6.1",
+        "prompt": "^1.0.0",
+        "solc": "^0.8.9",
+        "soluble": "^1.1.1"
+    },
+    "devDependencies": {
+        "ganache-cli": "^6.12.2"
+    }
+}
