@@ -160,7 +160,7 @@ executeSenderContext(
         await deployTransformer(
             transformerDeployer, 'FillQuoteTransformer',
             [
-                (await deployEcosystemContract('zero-ex/PolygonZkevmBridgeAdapter')).address,
+                (await deployEcosystemContract('zero-ex/PolygonZkevmBridgeAdapter', [cfg.weth])).address,
                 zeroEx.address
             ]);
         await deployTransformer(transformerDeployer, 'PayTakerTransformer');
