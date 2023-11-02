@@ -266,6 +266,8 @@ async function verifySource(eth, name, address, cargs = []) {
         apiKey = SECRETS.snowtraceKey;
     } else if (network === "base") {
         apiKey = SECRETS.basescanKey;
+    } else if (network.startsWith('polygon-zkevm')) {
+        apiKey = SECRETS.zkevmpolygonscanKey;
     }
     params.set('apikey', apiKey);
     params.set('module', 'contract');
