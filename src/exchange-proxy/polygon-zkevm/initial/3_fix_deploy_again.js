@@ -64,8 +64,43 @@ const CHAIN_CONFIG = {
                         '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
                     ]
                 ],
+                ['zero-ex/PolygonZkevmBridgeAdapter', '0xd780FCcD99072ff3b51182f5D4fCD90Bf684Baee',
+                    [
+                        '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
+                    ],
+                ],
+                ['zero-ex/FillQuoteTransformer', '0xaaA0B2978a0C0c60Ec54c8E85a4610729f15CE52',
+                    [
+                        '0xd780FCcD99072ff3b51182f5D4fCD90Bf684Baee',
+                        '0xDef1C0ded9bec7F1a1670819833240f027b25EfF',
+                    ],
+                ],
+                ['zero-ex/PayTakerTransformer', '0xF1EE9BCc5ff1f92D2e3316d95C64aB953d22eBA9'],
+                ['zero-ex/AffiliateFeeTransformer', '0x4906D009f48874646934AC9773725562Ec4E50Ae'],
+                ['zero-ex/PositiveSlippageFeeTransformer', '0x7636E7dd99C37e33bb1098e4eF08F037Eb0C6E36'],
+                ['zero-ex/WethTransformer', '0x14Dce5deBDd3148397bF5d4d83ee68E93760090b',
+                    [
+                        '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
+                    ],
+                ],
+                ['multisig/ZeroExGovernor', '0xa30f4A60A27dDead178c01EF80454A521b727328',
+                    [
+                        [], // No special function rules
+                        [], // No special function rules
+                        [], // No special function rules
+                        [
+                            '0x9E4496adE6096b000C856219C27734F4f89A5210', // amir (sidechain)
+                            '0x257619B7155d247e43c8B6d90C8c17278Ae481F0', // will
+                            '0x5A9d540A07a96a2bfC8a8dfd638359778C72526f', // jacob (sidechain)
+                            '0xe982f56B645E9858e865F8335Af157e9E6e12F9e', // phil (sidechain)
+                            '0xD88a4aFCEC49e6BFd18d1eb405259296657332e2', // theo
+                        ],
+                        1, // 1-of-N
+                        0, // No timelock
+                    ],
+                ],
             ],
-        exchangeProxyGovernor: '',
+        exchangeProxyGovernor: '0xa30f4A60A27dDead178c01EF80454A521b727328',
         transformerDeployer: '0xa50C6Cd7CE71e4909724606fe4885904E3C9F1BF',
         staking: NULL_ADDRESS,
         protocolFeeMultiplier: 0,
@@ -104,43 +139,11 @@ executeSenderContext(
             addToVerifyQueue(src, addr, cargs);
         }
 
-        const isSenderATransformerSigner = cfg.transformerSigners.some(a => isSameAddress(a, sender));
-
-        const zeroEx = await createEcosystemContract('zero-ex/IZeroEx', cfg.exchangeProxy);
-        const transformerDeployer = createEcosystemContract('zero-ex/TransformerDeployer', cfg.transformerDeployer);
-
-        // Deploy the transformers.
-        await deployTransformer(
-            transformerDeployer, 'FillQuoteTransformer',
-            [
-                (await deployEcosystemContract('zero-ex/PolygonZkevmBridgeAdapter', [cfg.weth])).address,
-                zeroEx.address
-            ]);
-        await deployTransformer(transformerDeployer, 'PayTakerTransformer');
-        await deployTransformer(transformerDeployer, 'AffiliateFeeTransformer');
-        await deployTransformer(transformerDeployer, 'PositiveSlippageFeeTransformer');
-        await deployTransformer(transformerDeployer, 'WethTransformer', [cfg.weth]);
-
         // Deploy the governor.
-        console.info(`deploying governor...`);
-        const governor = await deployEcosystemContract('multisig/ZeroExGovernor', [
-            [], // No special function rules
-            [], // No special function rules
-            [], // No special function rules
-            cfg.governorSigners,
-            1, // 1-of-N
-            0, // No timelock
-        ]);
+        console.info(`transferring ownership of transformer deployer to governor...`);
+        const governor = await createEcosystemContract('multisig/ZeroExGovernor', cfg.exchangeProxyGovernor);
+        const transformerDeployer = await createEcosystemContract('zero-ex/TransformerDeployer', cfg.transformerDeployer);
 
-        if (!isSenderATransformerSigner) {
-            console.info(`removing deployer from transformer deployer signers...`);
-            await transformerDeployer.removeAuthorizedAddress(sender).send(sendOpts);
-        }
-        console.info(`transferring ownership to the governor...`);
-        await zeroEx.transferOwnership(governor.address).send(sendOpts);
-        // WARNING: this script errors here. the eth_accounts RPC isn't supported on Polygon zkEVM
-        assert.strictEqual(await zeroEx.owner().call(), governor.address);
         await transformerDeployer.transferOwnership(governor.address).send(sendOpts);
-        assert.strictEqual(await transformerDeployer.owner().call(), governor.address);
     },
 );
