@@ -9,8 +9,8 @@ const CHAIN_CONFIG = {
     1101: {
         weth: '0x4F9A0e7FD2Bf6067db6994CF12E4495Df938E6e9',
         exchangeProxy: '0xDef1C0ded9bec7F1a1670819833240f027b25EfF',
-        exchangeProxyGovernor: '0xECC4F2a8e0fD933623B2EA4Ad84BFfd12CB1286c',
-        transformerDeployer: '0x58bcA53ebba1AAf25F0EDCd8DaD6421872fe20B2',
+        exchangeProxyGovernor: '0xa30f4A60A27dDead178c01EF80454A521b727328',
+        transformerDeployer: '0xa50C6Cd7CE71e4909724606fe4885904E3C9F1BF',
     },
 };
 

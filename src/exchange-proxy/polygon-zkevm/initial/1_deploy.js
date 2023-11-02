@@ -153,6 +153,7 @@ executeSenderContext(
             .migrate(features.metaTxV2.address, await features.metaTxV2.migrate().encode(), sender)
             .send(sendOpts);
 
+        // WARNING: this script fails here. the eth_accounts RPC isn't supported on Polygon zkEVM
         const flashWalletAddress = await zeroEx.getTransformWallet().call();
         console.info(`Flash wallet is at: ${flashWalletAddress.bold.yellow}`);
 
