@@ -48,11 +48,13 @@ const NETWORK_NAMES = {
     42220: 'celo',
     42161: 'arbitrum',
     421611: 'arbitrum-rinkeby',
+    11155111: 'sepolia',
 };
 
 const ETHERSCAN_API_URL_FOR_NETWORK = {
     main: 'https://api.etherscan.io/api',
     goerli: 'https://api-goerli.etherscan.io/api',
+    sepolia: 'https://api-sepolia.etherscan.io/api',
     bsc: 'https://api.bscscan.com/api',
     'bsc-testnet': 'https://api-testnet.bscscan.com/api',
     matic: 'https://api.polygonscan.com/api',
